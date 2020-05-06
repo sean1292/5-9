@@ -1,0 +1,58 @@
+<main class="app-container"></main>
+<script>
+  const $appContainer = document.querySelector('.app-container');
+  const setupLogin = () => {
+    $appContainer.innerHTML = `
+      <h1>You must be logged in</h1>
+      <input class="username" type="text" placeholder="username">
+      <button class="submit">Submit</button>
+    `;
+    const $username = document.querySelector('.username');
+    const $submit = document.querySelector('.submit');
+
+    $submit.addEventListener('click', () => {
+      // Login button click
+      fetch('/setCookie', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: $username.value,
+        }),
+      })
+        .then((response) => {
+          if (response.status === 403) {
+            window.alert('Username already exists, please enter a different username!');
+            return;
+          }
+          return response.json();
+        })
+        .then((body) => {
+          if (body.username) {
+            globalUsername = body.username;
+            render();
+          }
+        });
+    });
+  };
+  const startApp = () => {
+    fetch('/cookie', { credentials: 'same-origin' })
+      .then((r) => {
+        console.log(r);
+        if (r.status !== 200) {
+          setupLogin();
+          return {};
+        } else return r.json();
+      })
+      .then((body) => {
+        if (body.username) {
+          globalUsername = body.username;
+          return render();
+        }
+      });
+  };
+
+  startApp();
+</script>
