@@ -43,7 +43,12 @@
           }),
         })
           .then((r) => r.json())
-          .then((data) => {});
+          .then((data) => {
+            const imgs = data.images.reduce((acc, link) => {
+              return acc + `<img src="${link}">`;
+            }, '');
+            imageContainer.innerHTML = imgs;
+          });
       }
     });
   };

@@ -3,6 +3,7 @@ const cookieParser = require('cookie-parser');
 const fs = require('fs');
 const path = require('path');
 const { v4: uuid } = require('uuid');
+const gm = require('gm');
 
 const app = express();
 
@@ -48,6 +49,7 @@ app.post('/setCookie', (req, res) => {
 app.post('/images', (req, res) => {
   let user = req.body.username;
   //if the image hasn't been set for a user
+  const imageData = Buffer.from(req.body.img, 'base64');
   if (!users[user].meme) {
     const imgId = uuid();
     users[user].meme = imgId;
@@ -55,12 +57,16 @@ app.post('/images', (req, res) => {
     const imgId = users[user].meme;
   }
   const imageName = imgId + '.png';
-  fs.writeFile(path.join(__dirname, './public/', imageName), req.body.img, 'base64', (err) => {
-    if (err) console.log(err);
-    else {
-      const imagesLinks = getImageLinks();
-      res.json({ images: imagesLinks });
-    }
-  });
+  gm(imageData)
+    .fontSize(70)
+    .stroke('#ffffff')
+    .drawText(0, 200, req.body.message)
+    .write(path.join(__dirname, './public/', imageName), (err) => {
+      if (err) console.log(err);
+      else {
+        const imagesLinks = getImageLinks();
+        res.json({ images: imagesLinks });
+      }
+    });
 });
 app.listen(process.env.PORT || 8123);
