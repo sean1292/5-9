@@ -26,8 +26,8 @@
         videoElement.play();
         buttonElement.classList.remove('hidden');
       });
-    $message.focus();
-    $message.addEventListener('keyup', (e) => {
+    message.focus();
+    message.addEventListener('keyup', (e) => {
       if (e.key === 'Enter') {
         const pngData = canvasElement.toDataURL();
         const base64Data = pngData.replace(/^data:image\/png;base64,/, '');
